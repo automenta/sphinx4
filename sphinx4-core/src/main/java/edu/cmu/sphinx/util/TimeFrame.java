@@ -20,8 +20,8 @@ public class TimeFrame {
     private final long start;
     private final long end;
 
-    public TimeFrame(long duration) {
-        this(0, duration);
+    public TimeFrame(long numFrames) {
+        this(0, numFrames);
     }
 
     public TimeFrame(long start, long end) {

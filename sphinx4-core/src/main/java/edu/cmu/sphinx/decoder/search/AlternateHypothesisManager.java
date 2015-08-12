@@ -13,9 +13,13 @@
 package edu.cmu.sphinx.decoder.search;
 
 
+import com.gs.collections.api.block.function.Function0;
+import com.gs.collections.impl.map.mutable.UnifiedMap;
 import edu.cmu.sphinx.decoder.scorer.Scoreable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Manager for pruned hypothesis
@@ -24,7 +28,7 @@ import java.util.*;
  */
 public class AlternateHypothesisManager {
 
-    private final Map<Token, List<Token>> viterbiLoserMap = new HashMap<Token, List<Token>>();
+    private final UnifiedMap<Token,List<Token>> viterbiLoserMap = new UnifiedMap();
     private final int maxEdges;
 
 
@@ -47,11 +51,17 @@ public class AlternateHypothesisManager {
 
     public void addAlternatePredecessor(Token token, Token predecessor) {
         assert predecessor != token.getPredecessor();
-        List<Token> list = viterbiLoserMap.get(token);
-        if (list == null) {
-            list = new ArrayList<Token>();
-            viterbiLoserMap.put(token, list);
-        }
+        List<Token> list = viterbiLoserMap.getIfAbsentPut(token, new Function0<List<Token>>() {
+
+            @Override
+            public List<Token> value() {
+                return new ArrayList<Token>();
+            }
+        });
+//        if (list == null) {
+//            list = new ArrayList<Token>();
+//            viterbiLoserMap.put(token, list);
+//        }
         list.add(predecessor);
     }
 
@@ -62,7 +72,7 @@ public class AlternateHypothesisManager {
      * @param token - a token that may have alternate lower scoring predecessor that still might be of interest
      * @return A list of predecessors that scores lower than token.getPredecessor().
      */
-    public List<Token> getAlternatePredecessors(Token token) {
+    final public List<Token> getAlternatePredecessors(final Token token) {
         return viterbiLoserMap.get(token);
     }
 
@@ -72,12 +82,12 @@ public class AlternateHypothesisManager {
 
         int max = maxEdges - 1;
 
-        for (Map.Entry<Token, List<Token>> entry : viterbiLoserMap.entrySet()) {
-            List<Token> list = entry.getValue();
+        viterbiLoserMap.forEachKeyValue( (k,list) -> {
             Collections.sort(list, Scoreable.COMPARATOR);
             List<Token> newList = list.subList(0, list.size() > max ? max : list.size());
-            viterbiLoserMap.put(entry.getKey(), newList);
-        }
+            viterbiLoserMap.put(k, newList);
+        });
+
     }
 
 	public boolean hasAlternatePredecessors(Token token) {

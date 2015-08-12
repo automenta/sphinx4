@@ -12,8 +12,9 @@
 
 package edu.cmu.sphinx.util;
 
+import com.gs.collections.impl.list.mutable.FastList;
+
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -63,7 +64,7 @@ public class ExtendedStreamTokenizer {
      */
     public ExtendedStreamTokenizer(InputStream inputStream, int commentChar,
                                    boolean eolIsSignificant) {
-        this(new InputStreamReader(inputStream), eolIsSignificant);
+        this(new InputStreamReader(inputStream) /*new InputStreamReader(inputStream)*/, eolIsSignificant);
         commentChar(commentChar);
     }
 
@@ -96,7 +97,7 @@ public class ExtendedStreamTokenizer {
         st.whitespaceChars(0, 32);
         st.wordChars(33, 255);
         st.eolIsSignificant(eolIsSignificant);
-        putbackList = new ArrayList<String>();
+        putbackList = new FastList();
     }
 
 
@@ -245,17 +246,74 @@ public class ExtendedStreamTokenizer {
      * @throws StreamCorruptedException if the next value is not a
      * @throws IOException              if an error occurs while loading the data number
      */
-    public int getInt(String name)
-            throws IOException {
-        int iVal = 0;
-        try {
+    public int getInt(final String name) throws IOException {
+        int iVal;
+//        try {
             String val = getString();
-            iVal = Integer.parseInt(val);
-        } catch (NumberFormatException nfe) {
-            corrupt("while parsing int " + name);
-        }
+            //iVal = Integer.parseInt(val);
+            iVal = parseInt(val, Integer.MIN_VALUE);
+            if (iVal == Integer.MIN_VALUE) {
+                corrupt("while parsing int " + name);
+                return 0;
+            }
+//        } catch (NumberFormatException nfe) {
+//            corrupt("while parsing int " + name);
+//        }
         return iVal;
     }
+
+    public static int parseInt( final String s)     {
+        return parseInt(s, Integer.MIN_VALUE);
+    }
+
+    public static int parseInt( final String s, final int wrongValue )     {
+        /*if ( s == null )
+            throw new NumberFormatException( "Null string" );*/
+
+        // Check for a sign.
+        int num  = 0;
+        int sign = -1;
+        final int len  = s.length( );
+        final char ch  = s.charAt( 0 );
+        if ( ch == '-' )
+        {
+            if ( len == 1 )
+                throw new NumberFormatException( "Missing digits:  " + s );
+            sign = 1;
+        }
+        else
+        {
+            final int d = ch - '0';
+            if ( d < 0 || d > 9 )
+                throw new NumberFormatException( "Malformed:  " + s );
+            num = -d;
+        }
+
+        // Build the number.
+        final int max = (sign == -1) ?
+                -Integer.MAX_VALUE : Integer.MIN_VALUE;
+        final int multmax = max / 10;
+        int i = 1;
+        while ( i < len )         {
+            int d = s.charAt(i++) - '0';
+
+            if (( d < 0 || d > 9 )
+                //throw new NumberFormatException( "Malformed:  " + s );
+            || ( num < multmax )) return wrongValue;
+                //throw new NumberFormatException( "Over/underflow:  " + s );
+
+            num *= 10;
+
+            if ( num < (max+d) ) return wrongValue;
+
+                //throw new NumberFormatException( "Over/underflow:  " + s );
+
+            num -= d;
+        }
+
+        return sign * num;
+    }
+
 
 
     /**

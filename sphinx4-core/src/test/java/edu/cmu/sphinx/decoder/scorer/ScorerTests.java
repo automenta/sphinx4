@@ -1,17 +1,5 @@
 package edu.cmu.sphinx.decoder.scorer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
 import edu.cmu.sphinx.decoder.search.Token;
 import edu.cmu.sphinx.frontend.*;
 import edu.cmu.sphinx.frontend.databranch.DataBufferProcessor;
@@ -19,6 +7,13 @@ import edu.cmu.sphinx.frontend.endpoint.SpeechEndSignal;
 import edu.cmu.sphinx.frontend.endpoint.SpeechStartSignal;
 import edu.cmu.sphinx.util.props.ConfigurationManager;
 import edu.cmu.sphinx.util.props.ConfigurationManagerUtils;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Unit tests for the processing logic of the scorer implementations
@@ -27,7 +22,7 @@ import edu.cmu.sphinx.util.props.ConfigurationManagerUtils;
  */
 public class ScorerTests {
 
-    Scoreable testToken = new Token(null, 0.f, 0.f, 0.f, 0.f) {
+    final static Scoreable testToken = new Token(null, 0.f, 0.f, 0.f, 0.f) {
 
         @Override
         public float calculateScore(Data feature) {

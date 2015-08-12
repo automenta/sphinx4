@@ -1,19 +1,7 @@
 package edu.cmu.sphinx.linguist.language.ngram.trie;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.gs.collections.impl.map.mutable.primitive.ObjectIntHashMap;
+import com.gs.collections.impl.set.mutable.UnifiedSet;
 import edu.cmu.sphinx.linguist.WordSequence;
 import edu.cmu.sphinx.linguist.dictionary.Dictionary;
 import edu.cmu.sphinx.linguist.dictionary.Word;
@@ -21,13 +9,17 @@ import edu.cmu.sphinx.linguist.language.ngram.LanguageModel;
 import edu.cmu.sphinx.linguist.util.LRUCache;
 import edu.cmu.sphinx.util.LogMath;
 import edu.cmu.sphinx.util.TimerPool;
-import edu.cmu.sphinx.util.props.ConfigurationManagerUtils;
-import edu.cmu.sphinx.util.props.PropertyException;
-import edu.cmu.sphinx.util.props.PropertySheet;
-import edu.cmu.sphinx.util.props.S4Boolean;
-import edu.cmu.sphinx.util.props.S4Double;
-import edu.cmu.sphinx.util.props.S4Integer;
-import edu.cmu.sphinx.util.props.S4String;
+import edu.cmu.sphinx.util.props.*;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Language model that uses a binary NGram language model file ("binary trie file")
@@ -74,7 +66,7 @@ public class NgramTrieModel implements LanguageModel {
     // Configuration data
     // ------------------------------
     URL location;
-    protected Logger logger;
+    protected Logger logger = Logger.getLogger(getClass().getName());
     protected LogMath logMath;
     protected int maxDepth;
     protected int curDepth;
@@ -113,7 +105,7 @@ public class NgramTrieModel implements LanguageModel {
     //-----------------------------
     // Working data
     //-----------------------------
-    protected Map<Word, Integer> unigramIDMap;
+    protected ObjectIntHashMap unigramIDMap;
     private LRUCache<WordSequence, Float> ngramProbCache;
     
     public NgramTrieModel(String format, URL location, String ngramLogFile,
@@ -121,7 +113,8 @@ public class NgramTrieModel implements LanguageModel {
             int maxDepth, Dictionary dictionary,
             boolean applyLanguageWeightAndWip, float languageWeight,
             double wip, float unigramWeight) {
-        logger = Logger.getLogger(getClass().getName());
+
+
         this.format = format;
         this.location = location;
         this.ngramLogFile = ngramLogFile;
@@ -166,13 +159,12 @@ public class NgramTrieModel implements LanguageModel {
     /**
      * Builds the map from unigram to unigramID. Also finds the startWordID and
      * endWordID.
-     * 
-     * @param dictionary
+     *
      * */
     private void buildUnigramIDMap() {
         int missingWords = 0;
         if (unigramIDMap == null)
-            unigramIDMap = new HashMap<Word, Integer>();
+            unigramIDMap = new ObjectIntHashMap<Word>();
         for (int i = 0; i < words.length; i++) {
             Word word = dictionary.getWord(words[i]);
             if (word == null) {
@@ -257,10 +249,11 @@ public class NgramTrieModel implements LanguageModel {
      * @param prob - probability of unigram
      * @return probability of of highest order ngram available
      */
-    private float getAvailableProb(WordSequence wordSequence, TrieRange range, float prob) {
+    private float getAvailableProb(final WordSequence wordSequence, final TrieRange range, float prob) {
         if (!range.isSearchable()) return prob;
-        for (int reverseOrderMinusTwo = wordSequence.size() - 2; reverseOrderMinusTwo >= 0; reverseOrderMinusTwo--) {
-            int orderMinusTwo = wordSequence.size() - 2 - reverseOrderMinusTwo;
+        int wordSequenceSize = wordSequence.size();
+        for (int reverseOrderMinusTwo = wordSequenceSize - 2; reverseOrderMinusTwo >= 0; reverseOrderMinusTwo--) {
+            int orderMinusTwo = wordSequenceSize - 2 - reverseOrderMinusTwo;
             if (orderMinusTwo + 1 == maxDepth) break;
             int wordId = unigramIDMap.get(wordSequence.getWord(reverseOrderMinusTwo));
             float updatedProb = trie.readNgramProb(wordId, orderMinusTwo, range, quant);
@@ -385,7 +378,7 @@ public class NgramTrieModel implements LanguageModel {
      */
     @Override
     public Set<String> getVocabulary() {
-        Set<String> vocabulary = new HashSet<String>(Arrays.asList(words));
+        Set<String> vocabulary = UnifiedSet.newSetWith(words);
         return Collections.unmodifiableSet(vocabulary);
     }
 
@@ -420,10 +413,12 @@ public class NgramTrieModel implements LanguageModel {
 
     /** Clears the various N-gram caches. */
     private void clearCache() {
-        logger.info("LM Cache Size: " + ngramProbCache.size() + " Hits: "
-                + ngramHits + " Misses: " + ngramMisses);
+
+        /*logger.info("LM Cache Size: " + ngramProbCache.size() + " Hits: "
+                + ngramHits + " Misses: " + ngramMisses);*/
         if (clearCacheAfterUtterance) {
-            ngramProbCache = new LRUCache<WordSequence, Float>(ngramCacheSize);
+            //ngramProbCache = new LRUCache<WordSequence, Float>(ngramCacheSize);
+            ngramProbCache.clear();
         }
     }
 

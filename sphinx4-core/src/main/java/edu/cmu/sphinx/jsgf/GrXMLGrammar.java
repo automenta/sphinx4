@@ -11,22 +11,20 @@
 
 package edu.cmu.sphinx.jsgf;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
-
+import edu.cmu.sphinx.jsgf.rule.JSGFRule;
+import edu.cmu.sphinx.linguist.language.grammar.GrammarNode;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
-import edu.cmu.sphinx.jsgf.rule.JSGFRule;
-import edu.cmu.sphinx.linguist.language.grammar.GrammarNode;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Grammar for GrXML W3C Standard
@@ -38,6 +36,10 @@ public class GrXMLGrammar extends JSGFGrammar {
     protected void loadXML() throws IOException {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
+
+            factory.setValidating(false);
+            factory.setNamespaceAware(false);
+
             XMLReader xr = factory.newSAXParser().getXMLReader();
             rules = new HashMap<String, JSGFRule>();
             GrXMLHandler handler = new GrXMLHandler(baseURL, rules, logger);

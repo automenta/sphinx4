@@ -212,6 +212,7 @@ public class PartitionActiveListFactory extends ActiveListFactory {
          * @return the list of tokens
          */
         public List<Token> getTokens() {
+
             return Arrays.asList(tokenList).subList(0, size);
         }
 

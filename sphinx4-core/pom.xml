@@ -15,6 +15,22 @@
   <packaging>jar</packaging>
 
   <name>Sphinx4 core</name>
+    <build>
+
+
+        <resources>
+            <resource>
+                <directory>${basedir}/src</directory>
+                <includes>
+                    <include>**/*.sxd</include>
+                    <include>**/*.sxl</include>
+                    <include>**/*.dict</include>
+                    <include>**/*.grxml</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+    </build>
 
   <dependencies>
 

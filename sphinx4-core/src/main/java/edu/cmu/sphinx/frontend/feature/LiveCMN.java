@@ -54,7 +54,7 @@ import edu.cmu.sphinx.util.props.S4Integer;
  */
 public class LiveCMN extends BaseDataProcessor {
     
-    private DecimalFormat formatter = new DecimalFormat("0.00;-0.00", new DecimalFormatSymbols(Locale.US));;
+    private static final DecimalFormat formatter = new DecimalFormat("0.00;-0.00", new DecimalFormatSymbols(Locale.US));;
 
     /** The property for the live CMN initial window size. */
     @S4Integer(defaultValue = 200)

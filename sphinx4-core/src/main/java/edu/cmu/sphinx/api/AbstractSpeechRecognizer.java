@@ -11,8 +11,6 @@
 
 package edu.cmu.sphinx.api;
 
-import java.io.IOException;
-
 import edu.cmu.sphinx.decoder.adaptation.ClusteredDensityFileData;
 import edu.cmu.sphinx.decoder.adaptation.Stats;
 import edu.cmu.sphinx.decoder.adaptation.Transform;
@@ -20,14 +18,16 @@ import edu.cmu.sphinx.linguist.acoustic.tiedstate.Sphinx3Loader;
 import edu.cmu.sphinx.recognizer.Recognizer;
 import edu.cmu.sphinx.result.Result;
 
+import java.io.IOException;
+
 
 /**
  * Base class for high-level speech recognizers.
  */
 public class AbstractSpeechRecognizer {
 
-    protected final Context context;
-    protected final Recognizer recognizer;
+    public final Context context;
+    public final Recognizer recognizer;
     
     protected ClusteredDensityFileData clusters;
 

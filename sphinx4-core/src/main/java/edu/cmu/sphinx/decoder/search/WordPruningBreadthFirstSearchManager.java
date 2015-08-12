@@ -528,9 +528,9 @@ public class WordPruningBreadthFirstSearchManager extends TokenSearchManager {
         tokenSum += activeList.size();
         tokenCount++;
 
-        if ((tokenCount % 1000) == 0) {
+        /*if ((tokenCount % 1000) == 0) {
             logger.info("Average Tokens/State: " + (tokenSum / tokenCount));
-        }
+        }*/
     }
 
     /** Removes unpromising branches from the active list */

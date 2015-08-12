@@ -30,7 +30,8 @@ public abstract class AbstractFeatureExtractor extends BaseDataProcessor {
 
     private int bufferPosition;
     private Signal pendingSignal;
-    private LinkedList<Data> outputQueue;
+    //private LinkedList<Data> outputQueue;
+    private ArrayDeque<Data> outputQueue;
 
     protected int cepstraBufferEdge;
     protected int window;
@@ -69,7 +70,7 @@ public abstract class AbstractFeatureExtractor extends BaseDataProcessor {
         cepstraBufferSize = 256;
         cepstraBuffer = new DoubleData[cepstraBufferSize];
         cepstraBufferEdge = cepstraBufferSize - (window * 2 + 2);
-        outputQueue = new LinkedList<Data>();
+        outputQueue = new ArrayDeque(); //new LinkedList<Data>();
         reset();
     }
 

@@ -40,6 +40,8 @@ public class Token implements Scoreable {
     private static final DecimalFormat scoreFmt = new DecimalFormat("0.0000000E00");
     private static final DecimalFormat numFmt = new DecimalFormat("0000");
 
+
+
     private Token predecessor;
 
     private float logLanguageScore;
@@ -77,6 +79,24 @@ public class Token implements Scoreable {
         curCount++;
     }
 
+
+
+    @Override
+    public int hashCode() {
+        return searchState.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        return searchState.equals(((Token)o).searchState);
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        Token token = (Token) o;
+//
+//        return id == token.id;
+    }
 
     /**
      * Creates the initial token with the given word history depth
